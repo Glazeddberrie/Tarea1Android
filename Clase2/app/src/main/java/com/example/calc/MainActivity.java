@@ -1,5 +1,6 @@
 package com.example.calc;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -12,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import java.math.BigDecimal;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -87,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void calcularResultado() {
         String numeroIngresado = etNumero.getText().toString();
         if (!numeroIngresado.isEmpty()) {
@@ -106,17 +110,40 @@ public class MainActivity extends AppCompatActivity {
                 case "/":
                     if (numero2 != 0) {
                         resultado = numero1 / numero2;
+
                     } else {
-                        Toast.makeText(this, "No se puede dividir por cero", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "No se puede dividir por cero.", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     break;
             }
+            int finalAns = removeDecAns(resultado, operacion);
 
-            tvResultado.setText("Resultado: " + resultado);
-            etNumero.setText(""); // Limpiar el EditText para nuevas operaciones
+            if (finalAns == 0 && operacion.equals("/")){
+                String divAns;
+                if (resultado == Math.floor(resultado)) {
+                    divAns = String.format("%.0f", resultado);
+                } else {
+                    divAns = String.valueOf(resultado);
+                }
+                tvResultado.setText("Resultado: " + String.valueOf(divAns));
+                etNumero.setText(String.valueOf(divAns));
+            } else {
+                tvResultado.setText("Resultado: " + String.valueOf(finalAns));
+                etNumero.setText(String.valueOf(finalAns)); // Limpiar el EditText para nuevas operaciones
+            }
+
         } else {
             Toast.makeText(this, "Por favor ingrese un número", Toast.LENGTH_SHORT).show();
+        }
+    }
+    public Integer removeDecAns(double doubAns, String operation) {
+
+        if (operation.equals("+") || operation.equals("-") || operation.equals("*")){
+            int intAns = (int) doubAns;
+            return intAns;
+        } else {
+            return 0;
         }
     }
 }
